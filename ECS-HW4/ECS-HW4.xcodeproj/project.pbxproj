@@ -26,6 +26,7 @@
 		F8693C74238F4C270022D952 /* ECS-HW4 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "ECS-HW4"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8693C7E238F4F010022D952 /* maxTweeter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = maxTweeter.h; sourceTree = "<group>"; };
 		F8693C7F238F4F010022D952 /* maxTweeter.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = maxTweeter.c; sourceTree = "<group>"; };
+		F8693C81238F6A4F0022D952 /* cl-tweets-short-clean.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = "cl-tweets-short-clean.csv"; path = "../../../../Downloads/cl-tweets-short-clean.csv"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +61,7 @@
 			children = (
 				F8693C7E238F4F010022D952 /* maxTweeter.h */,
 				F8693C7F238F4F010022D952 /* maxTweeter.c */,
+				F8693C81238F6A4F0022D952 /* cl-tweets-short-clean.csv */,
 			);
 			path = "ECS-HW4";
 			sourceTree = "<group>";

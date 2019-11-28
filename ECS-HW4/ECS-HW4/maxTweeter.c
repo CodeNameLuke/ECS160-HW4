@@ -9,6 +9,7 @@
 
 #include "maxTweeter.h"
 #include <stdio.h>
+#include <string.h>
 
 #define NUMBER_OF_RESULTS 10
 #define MAX_LINE_LENGTH 1024
@@ -44,27 +45,28 @@ struct topTenTweeters maxTweeter(const char *filename){
         // Process the header... check for "name" column.
         if(row_count == 1){
             
+            // Gets pointer to first element.
             columnNames[0] = strtok(buffer, ",");
+            column_count++;
             
+            // Gets every comma seperated header.
             int i = 0;
-            
             while(columnNames[i] != NULL){
                 
-                
-                
+                i++;
+                column_count++;
+                columnNames[i] = strtok(NULL, ",");
+            }
+            
+            
+            for (int j=0; j<=i-1; j++) {
+                printf("%s\n", columnNames[j]);
             }
         
             continue;
             
         }
-        
-        
-        
-        
-        
     }
-    
-    
     
     return tweeterArray;
     
@@ -72,17 +74,19 @@ struct topTenTweeters maxTweeter(const char *filename){
 
 int main(int argc, char *argv[]){
     
-    if(argc != 2){
-        
-        printf("Invalid Input Format\n");
-        return -1;
-        
-    }
-    char* fileName = argv[2];
-    
-//    maxTweeter(fileName);
+    // If argc != 2 that means there is either less than 1 argument or more.
+    // Commented out to test with direct path.
     
     
+//    if(argc != 2){
+//
+//        printf("Invalid Input Format\n");
+//        return -1;
+//
+//    }
+//    char* fileName = argv[2];
+    
+    maxTweeter("/Users/LukeSilva/Downloads/cl-tweets-short-clean.csv");
     
     return 0;
     
