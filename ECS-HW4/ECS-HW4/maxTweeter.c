@@ -14,17 +14,9 @@
 
 #define MAX_LINE_LENGTH 1024 // Line size will not exceed 1024 bytes.
 #define MAX_ROWS 20000 // 20,000 Lines Max CSV.
-#define NUMBER_OF_RESULTS 10
 
-struct topTenTweeters{
-    
-    char topTen[10][1024];
-    
-};
 
-struct topTenTweeters maxTweeter(const char *filename){
-    
-    struct topTenTweeters tweeterArray;
+void maxTweeter(const char *filename){
 
     FILE *file = fopen(filename, "r");
     if(!file){
@@ -57,6 +49,9 @@ struct topTenTweeters maxTweeter(const char *filename){
             columnNames[0] = strtok(buffer, ",");
             column_count++;
             
+            // Check if first value == "name"
+            
+            
             // Gets every comma seperated header.
             int i = 0;
             while(columnNames[i] != NULL){
@@ -77,7 +72,6 @@ struct topTenTweeters maxTweeter(const char *filename){
         }
     }
     
-    return tweeterArray;
     
 }
 
