@@ -15,6 +15,64 @@
 #define MAX_LINE_LENGTH 1024 // Line size will not exceed 1024 bytes.
 #define MAX_ROWS 20000 // 20,000 Lines Max CSV.
 
+// Checks Entries and Headers for valid quotes.
+char* removeOutermostQuotes(char* string){
+    
+    int lastCharPosition = strlen(string) - 1;
+    
+    printf("First character = %c, Last Character = %c\n", string[0],string[lastCharPosition]);
+    
+    
+    
+    return "hello";
+    
+}
+
+int getNumberOfColumns(char* line){
+    
+    int count = 0;
+    char buffer[1024];
+    
+    strcpy(buffer, line);
+    
+    char *word;
+    
+    for(word = strtok(buffer, "'"); word && *word; word = strtok(NULL, ",\n"), count+=1 ){
+        // nothing
+    }
+    return count;
+}
+
+// Return column number of the "name" or ""name"" column.
+// Also check if there are other "name" or ""name"" columns...making file invalid.
+int getNameColNumber(char *headerLine){
+    
+    int colNum;
+    int count = 0;
+    // On piazza TA said that maximum size of name could by whole line?
+    char possibleName1[1024];
+    char possibleName2[1024];
+    
+    // Copy valid name columns into char arrays.
+    strcpy(possibleName1, "name");
+    strcpy(possibleName2, "\"name\"");
+    
+    const char* tok;
+    
+    for (colNum = 0, tok = strtok(headerLine, ",");tok && *tok;tok = strtok(NULL, ",\n"), colNum += 1){
+        // Increment count for possible matches...
+        if (strcmp(tok, possibleName1) == 0 || strcmp(tok, possibleName2) == 0){
+            count += 1;
+        }
+    }
+    
+    if(count != 1){
+        printf("Invalid File Format");
+        return -1;
+    }
+
+    return colNum;
+}
 
 void maxTweeter(const char *filename){
 
@@ -89,7 +147,12 @@ int main(int argc, char *argv[]){
 //    }
 //    char* fileName = argv[2];
     
-    maxTweeter("/Users/LukeSilva/Downloads/cl-tweets-short-clean.csv");
+//    maxTweeter("/Users/LukeSilva/Downloads/cl-tweets-short-clean.csv");
+    
+    char* string = "YOUNGMONEYMILITIA";
+    
+    checkForQuotes(string);
+    
     
     return 0;
     
