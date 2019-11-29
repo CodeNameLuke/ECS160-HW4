@@ -11,8 +11,10 @@
 #include <stdio.h>
 #include <string.h>
 
+
+#define MAX_LINE_LENGTH 1024 // Line size will not exceed 1024 bytes.
+#define MAX_ROWS 20000 // 20,000 Lines Max CSV.
 #define NUMBER_OF_RESULTS 10
-#define MAX_LINE_LENGTH 1024
 
 struct topTenTweeters{
     
@@ -29,10 +31,16 @@ struct topTenTweeters maxTweeter(const char *filename){
         printf("Invalid Input Format");
     }
     
-    char buffer[MAX_LINE_LENGTH];
+    
     int row_count = 0;
     int column_count = 0;
     char *columnNames[1024];
+    
+    // Array to store all csv information.
+    char csvToArray[MAX_ROWS][MAX_LINE_LENGTH];
+    // temp buffer to store line contents.
+    char buffer[MAX_LINE_LENGTH];
+    
     
     while(fgets(buffer, MAX_LINE_LENGTH, file)){
         
@@ -52,17 +60,18 @@ struct topTenTweeters maxTweeter(const char *filename){
             // Gets every comma seperated header.
             int i = 0;
             while(columnNames[i] != NULL){
-                
                 i++;
                 column_count++;
                 columnNames[i] = strtok(NULL, ",");
             }
             
             
+            
+            // Printing header items
             for (int j=0; j<=i-1; j++) {
                 printf("%s\n", columnNames[j]);
             }
-        
+            
             continue;
             
         }
