@@ -11,10 +11,60 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 // Include '\n' but exclude '\0'
 #define MAX_LINE_LENGTH 1024 // Line size will not exceed 1024 bytes.
 #define MAX_ROWS 20000 // 20,000 Lines Max CSV.
+
+typedef struct Tweets tweets;
+
+struct Tweets{
+    char* name;
+    int numberOfTweets;
+    struct Tweets *nextTweet;
+    
+};
+
+void addTweetToList(struct Tweets **tweets, char *name, int numberOfTweets){
+    
+    struct Tweets *tmp = (struct Tweets*) malloc(sizeof(struct Tweets));
+    tmp->name = name;
+    tmp->numberOfTweets = numberOfTweets;
+    tmp->nextTweet = *tweets;
+    *tweets = tmp;
+}
+
+bool checkListForName(struct Tweets **tweetList, char *nameCheck){
+    
+    bool found = false;
+    struct Tweets *tweet;
+    // Iterate through the LinkedList to find a matching name.
+    for(tweet = *tweetList; tweet != NULL; tweet = tweet->nextTweet){
+        if(strcmp(tweet->name, nameCheck) == 0){
+            tweet->numberOfTweets = tweet->numberOfTweets + 1;
+            found = true;
+        }
+    }
+    return found;
+}
+
+typedef struct Tweeter tweeter;
+
+struct Tweeter {
+   char  *Name;
+   int   numberOfTweets;
+   struct Tweeter *nextTweeter;
+};
+
+
+void addTweeter(struct Tweeter **tweet, char *tweeterName, int numTweets){
+    struct Tweeter *tempTweet = (struct Tweeter*) malloc(sizeof(struct Tweeter));
+    tempTweet->Name = tweeterName;
+    tempTweet->numberOfTweets = numTweets;
+    tempTweet->nextTweeter = *tweet;
+    *tweet = tempTweet;
+}
 
 // Checks Entries and Headers for valid quotes.
 char* removeOutermostQuotes(char* string){
