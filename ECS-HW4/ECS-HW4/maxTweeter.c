@@ -26,6 +26,31 @@ char* removeOutermostQuotes(char* string){
     
 }
 
+char *
+strtok_single (char * str, char const * delims)
+{
+  static char  * src = NULL;
+  char  *  p,  * ret = 0;
+
+  if (str != NULL)
+    src = str;
+
+  if (src == NULL)
+    return NULL;
+
+  if ((p = strpbrk (src, delims)) != NULL) {
+    *p  = 0;
+    ret = src;
+    src = ++p;
+
+  } else if (*src) {
+    ret = src;
+    src = NULL;
+  }
+
+  return ret;
+}
+
 
 // Gets number of columns from splitting the csv...
 // This must be called during every line read to check if the # of columns is the same for all lines.
@@ -36,13 +61,13 @@ int getNumberOfColumns(char* line){
     
     strcpy(buffer, line);
     
-    char *word;
+    char *tmp = strdup(buffer);
+    char *token;
     
-    for(word = strtok(buffer, ","); word && *word; word = strtok(NULL, ",\n")){
-        
-        count +=1;
-        
+    while((token = strsep(&tmp, ","))){
+        count+=1;
     }
+    
     return count;
 }
 
@@ -54,8 +79,8 @@ int getNameColNumber(char *headerLine){
     int count = 0;
     int actualColNum = 0;
     // On piazza TA said that maximum size of name could by whole line?
-    char possibleName1[1024];
-    char possibleName2[1024];
+    char possibleName1[10];
+    char possibleName2[10];
     
     // Copy valid name columns into char arrays.
     strcpy(possibleName1, "name");
@@ -89,19 +114,6 @@ int isValidCSV(const char *filename){
     
 }
 
-void testFile(const char *filename){
-    
-    FILE *file = fopen(filename, "r");
-    
-    if(!file){
-        
-        perror("Invalid Input Format");
-        
-    }
-    
-}
-
-
 void maxTweeter(const char *filename){
 
     printf("filename = %s\n", filename);
@@ -128,6 +140,7 @@ void maxTweeter(const char *filename){
         // Check if first line is null.
         // Check for empty first line ... " ,   ,  ,,,  ,, , ,"
         
+        char *tmp = strdup(buffer);
         
         row_count++;
         
@@ -135,24 +148,20 @@ void maxTweeter(const char *filename){
         if(row_count == 1){
             
             column_count = getNumberOfColumns(buffer);
-            
             printf("Column_count = %d\n", column_count);
             
             // Gets pointer to first element.
-            columnNames[0] = strtok(buffer, ",");
+            columnNames[0] = strsep(&tmp, ",");
             column_count++;
             
-            // Check if first value == "name"
-            
-            
             // Gets every comma seperated header.
+            char *token;
             int i = 0;
-            while(columnNames[i] != NULL){
-                i++;
-                column_count++;
-                columnNames[i] = strtok(NULL, ",");
+            while((token = strsep(&tmp, ","))){
+                i+=1;
+                column_count+=1;
+                columnNames[i] = token;
             }
-            
             
             
             // Printing header items
@@ -171,6 +180,9 @@ void maxTweeter(const char *filename){
 } // maxTweeter
 
 
+
+// Just a single quote as a name is invalid ,", or ,',
+
 int main(int argc, char *argv[]){
     
     // If argc != 2 that means there is either less than 1 argument or more.
@@ -185,7 +197,16 @@ int main(int argc, char *argv[]){
 //    }
 //    char* fileName = argv[2];
     
-    testFile("‎⁨/Users/celestinosilva/Downloads/test-tweets.csv");
+    
+char testString1[] = " ,tweet_id,airline_sentiment,airline_sentiment_confidence,negativereason,negativereason_confidence,airline,airline_sentiment_gold,name,negativereason_gold,retweet_count,text,tweet_coord,tweet_created,tweet_location,user_timezone";
+    
+    char filename[] = "/Users/celestinosilva/Downloads/test-tweets.csv";
+    
+    int num_columns = getNumberOfColumns(testString1);
+    
+    maxTweeter(filename);
+    
+    printf("%d\n", num_columns);
 
     return 0;
     
