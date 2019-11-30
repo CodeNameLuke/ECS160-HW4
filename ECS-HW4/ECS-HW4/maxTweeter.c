@@ -26,31 +26,12 @@ char* removeOutermostQuotes(char* string){
     
 }
 
-char *
-strtok_single (char * str, char const * delims)
-{
-  static char  * src = NULL;
-  char  *  p,  * ret = 0;
 
-  if (str != NULL)
-    src = str;
-
-  if (src == NULL)
-    return NULL;
-
-  if ((p = strpbrk (src, delims)) != NULL) {
-    *p  = 0;
-    ret = src;
-    src = ++p;
-
-  } else if (*src) {
-    ret = src;
-    src = NULL;
-  }
-
-  return ret;
+// Return invalid file if there is more than one empty file header.
+int getEmptyColumnCount(char *headerline){
+    
+    return 0;
 }
-
 
 // Gets number of columns from splitting the csv...
 // This must be called during every line read to check if the # of columns is the same for all lines.
@@ -75,9 +56,10 @@ int getNumberOfColumns(char* line){
 // Also check if there are other "name" or ""name"" columns...making file invalid.
 int getNameColNumber(char *headerLine){
     
-    int colNum = 0;
+    // Need to keep track of a 'count' variable just in case there are multiple 'name' fields...
     int count = 0;
     int actualColNum = 0;
+    int currentCol = 0;
     // On piazza TA said that maximum size of name could by whole line?
     char possibleName1[10];
     char possibleName2[10];
@@ -86,12 +68,17 @@ int getNameColNumber(char *headerLine){
     strcpy(possibleName1, "name");
     strcpy(possibleName2, "\"name\"");
     
-    const char* tok;
+    char *token;
+    token = strsep(&headerLine, ",");
+    if(strcmp(token, possibleName1) == 0 || strcmp(token, possibleName2) == 0){
+        actualColNum = 0;
+        count += 1;
+    }
     
-    for (colNum = 0, tok = strtok(headerLine, ",");tok && *tok;tok = strtok(NULL, ",\n"), colNum += 1){
-        // Increment count for possible matches...
-        if (strcmp(tok, possibleName1) == 0 || strcmp(tok, possibleName2) == 0){
-            actualColNum = colNum;
+    while((token = strsep(&headerLine, ","))){
+        currentCol += 1;
+        if(strcmp(token, possibleName1) == 0 || strcmp(token, possibleName2) == 0){
+            actualColNum = currentCol;
             count += 1;
         }
     }
@@ -115,8 +102,6 @@ int isValidCSV(const char *filename){
 }
 
 void maxTweeter(const char *filename){
-
-    printf("filename = %s\n", filename);
     
     FILE *file = fopen(filename, "r");
     
@@ -126,6 +111,7 @@ void maxTweeter(const char *filename){
     
     int row_count = 0;
     int column_count = 0;
+    int namePOS = 0;
     char *columnNames[1024];
     
     // Array to store all csv information.
@@ -150,6 +136,9 @@ void maxTweeter(const char *filename){
             column_count = getNumberOfColumns(buffer);
             printf("Column_count = %d\n", column_count);
             
+            namePOS = getNameColNumber(buffer);
+            printf("Name Column Found @ index = %d\n", namePOS);
+            
             // Gets pointer to first element.
             columnNames[0] = strsep(&tmp, ",");
             column_count++;
@@ -160,18 +149,17 @@ void maxTweeter(const char *filename){
             while((token = strsep(&tmp, ","))){
                 i+=1;
                 column_count+=1;
+                printf("Iteration : %d Value: %s\n", i, token);
                 columnNames[i] = token;
-            }
-            
-            
-            // Printing header items
-            for (int j=0; j<=i-1; j++) {
-                printf("%s\n", columnNames[j]);
+                
+                printf("ColumnName Value = %s\n", columnNames[i]);
             }
             
             continue;
             
         }
+        
+        
         
         
     } // fgets()
@@ -197,16 +185,8 @@ int main(int argc, char *argv[]){
 //    }
 //    char* fileName = argv[2];
     
-    
-char testString1[] = " ,tweet_id,airline_sentiment,airline_sentiment_confidence,negativereason,negativereason_confidence,airline,airline_sentiment_gold,name,negativereason_gold,retweet_count,text,tweet_coord,tweet_created,tweet_location,user_timezone";
-    
     char filename[] = "/Users/celestinosilva/Downloads/test-tweets.csv";
-    
-    int num_columns = getNumberOfColumns(testString1);
-    
     maxTweeter(filename);
-    
-    printf("%d\n", num_columns);
 
     return 0;
     
