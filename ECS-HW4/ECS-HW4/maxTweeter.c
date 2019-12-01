@@ -27,6 +27,75 @@ struct Tweets{
     
 };
 
+// MergeSort adapted from: https://www.geeksforgeeks.org/merge-sort-for-linked-list/
+struct Tweets* SortedMerge(struct Tweets* a, struct Tweets* b)
+{
+    struct Tweets* result = NULL;
+  
+    /* Base cases */
+    if (a == NULL)
+        return (b);
+    else if (b == NULL)
+        return (a);
+  
+    /* Pick either a or b, and recur */
+    if (a->numberOfTweets <= b->numberOfTweets) {
+        result = a;
+        result->nextTweet = SortedMerge(a->nextTweet, b);
+    }
+    else {
+        result = b;
+        result->nextTweet = SortedMerge(a, b->nextTweet);
+    }
+    return (result);
+}
+  
+// Split the nodes of the given list into front and back halves,
+// If the length is odd, the extra node should go in the front list.
+// Adapted from: https://www.geeksforgeeks.org/merge-sort-for-linked-list/
+void FrontBackSplit(struct Tweets* source, struct Tweets** frontRef, struct Tweets** backRef){
+    struct Tweets* fast;
+    struct Tweets* slow;
+    slow = source;
+    fast = source->nextTweet;
+  
+    // Advance 'fast' two nodes, and advance 'slow' one node */
+    // Move 'fast' ptr twice as fast as 'slow' ptr so once fast ptr is null slow will be a midpoint...
+    while (fast != NULL) {
+        fast = fast->nextTweet;
+        if (fast != NULL) {
+            slow = slow->nextTweet;
+            fast = fast->nextTweet;
+        }
+    }
+  
+    // Split the list in two.
+    *frontRef = source;
+    *backRef = slow->nextTweet;
+    slow->nextTweet = NULL;
+}
+
+void MergeSort(struct Tweets** headRef){
+    struct Tweets* head = *headRef;
+    struct Tweets* a;
+    struct Tweets* b;
+  
+    // Base case.
+    if ((head == NULL) || (head->nextTweet == NULL)) {
+        return;
+    }
+  
+    // Split head into 'a' and 'b' sublists
+    FrontBackSplit(head, &a, &b);
+  
+    // Recursive sort of sublists.
+    MergeSort(&a);
+    MergeSort(&b);
+  
+    // Merge the two sublists.
+    *headRef = SortedMerge(a, b);
+}
+
 void addTweetToList(struct Tweets **tweets, char *name, int numberOfTweets){
     
     struct Tweets *tmp = (struct Tweets*) malloc(sizeof(struct Tweets));
@@ -245,8 +314,6 @@ void maxTweeter(const char *filename){
     int namePOS = 0;
     struct Tweets *tweetList = NULL;
     
-    // Array to store all csv information.
-//    char csvToArray[MAX_ROWS][MAX_LINE_LENGTH];
     // temp buffer to store line contents.
     char buffer[MAX_LINE_LENGTH];
     
@@ -309,10 +376,10 @@ void maxTweeter(const char *filename){
     } // fgets()
     
     printLinkedList(&tweetList);
+    MergeSort(&tweetList);
+    printLinkedList(&tweetList);
     
 } // maxTweeter
-
-
 
 // Just a single quote as a name is invalid ,", or ,',
 
