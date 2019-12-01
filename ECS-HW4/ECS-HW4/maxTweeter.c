@@ -20,6 +20,7 @@
 typedef struct Tweets tweets;
 
 struct Tweets{
+    
     char* name;
     int numberOfTweets;
     struct Tweets *nextTweet;
@@ -36,7 +37,7 @@ void addTweetToList(struct Tweets **tweets, char *name, int numberOfTweets){
 }
 
 bool checkListForName(struct Tweets **tweetList, char *nameCheck){
-    
+    // Keep boolean value for if the name was found or not.
     bool found = false;
     struct Tweets *tweet;
     // Iterate through the LinkedList to find a matching name.
@@ -64,6 +65,17 @@ void addTweeter(struct Tweeter **tweet, char *tweeterName, int numTweets){
     tempTweet->numberOfTweets = numTweets;
     tempTweet->nextTweeter = *tweet;
     *tweet = tempTweet;
+}
+
+
+void removeFirstAndLast(char *targetString){
+    
+    size_t length = strlen(targetString);
+    //assert(length >= 2); // Need to make sure the string is not of length 2.
+    memmove(targetString, targetString + 1, length - 2);
+    targetString[length - 2] = 0;
+    
+    
 }
 
 // Checks Entries and Headers for valid quotes.
@@ -134,21 +146,33 @@ int getNameColNumber(char *headerLine){
     }
     
     if(count != 1){
-        printf("Invalid File Format");
+        printf("Invalid File Format\n");
         return -1;
     }
 
     return actualColNum;
 }
 
-int isValidCSV(const char *filename){
+// Checks if end of string matches desired string.
+int endsWith (char *str, char *end) {
+    size_t slen = strlen (str);
+    size_t elen = strlen (end);
+    if (slen < elen)
+        return 0;
+    return (strcmp (&(str[slen-elen]), end) == 0);
+}
+
+bool isValidCSV(char *filename){
     
     // Check if the file actually ends in .csv.
-    // Return 0 if file is valid.
-    // Return -1 if file is invalid.
-    
-    return 0;
-    
+    if(endsWith(filename, ".csv")){
+        printf("Valid File Extension\n");
+        return true;
+    }else{
+        printf("Invalid File Format\n");
+        exit(-1);
+    }
+    return false;
 }
 
 void maxTweeter(const char *filename){
@@ -156,7 +180,7 @@ void maxTweeter(const char *filename){
     FILE *file = fopen(filename, "r");
     
     if(!file){
-        perror("Invalid Input Format");
+        perror("Invalid Input Format\n");
     }
     
     int row_count = 0;
@@ -209,11 +233,7 @@ void maxTweeter(const char *filename){
             
         }
         
-        
-        
-        
     } // fgets()
-    
     
 } // maxTweeter
 
@@ -236,8 +256,14 @@ int main(int argc, char *argv[]){
 //    char* fileName = argv[2];
     
     char filename[] = "/Users/celestinosilva/Downloads/test-tweets.csv";
-    maxTweeter(filename);
-
+//    maxTweeter(filename);
+    
+    isValidCSV(filename);
+    char targetString[] = "\"Hello\"";
+    
+    removeFirstAndLast(targetString);
+    printf(targetString);
+    
     return 0;
     
 }
