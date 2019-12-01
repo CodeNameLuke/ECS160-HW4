@@ -17,6 +17,7 @@
 #define MAX_ROWS 20000 // 20,000 Lines Max CSV.
 
 typedef struct Tweets tweets;
+bool nameIsQuoted = false;
 
 struct Tweets{
     
@@ -124,12 +125,14 @@ char* getStringFromPos(char *line, int pos){
     
     int column = 0;
     
+    char *tmp = strdup(line);
+
     char *token;
-    token = strsep(&line, ",");
+    token = strsep(&tmp, ",");
     if(pos == column){
         return token;
     }else{
-        while ((token = strsep(&line, ","))) {
+        while ((token = strsep(&tmp, ","))) {
             column += 1;
             if(pos == column){
                 return token;
@@ -163,6 +166,11 @@ int getNameColNumber(char *headerLine){
     token = strsep(&headerLine, ",");
     if(strcmp(token, possibleName1) == 0 || strcmp(token, possibleName2) == 0 || strcmp(token, possibleName3) == 0 || strcmp(token, possibleName4) == 0){
         
+        // Check if name is quoted. If it is we need to make sure that all the entries are quoted too.
+        if((strcmp(token, possibleName2) == 0) || (strcmp(token, possibleName4) == 0)){
+            nameIsQuoted = true;
+        }
+        
         actualColNum = currentCol;
         count += 1;
     }
@@ -171,12 +179,17 @@ int getNameColNumber(char *headerLine){
         currentCol += 1;
         if(strcmp(token, possibleName1) == 0 || strcmp(token, possibleName2) == 0 || strcmp(token, possibleName3) == 0 || strcmp(token, possibleName4) == 0){
             
+            if((strcmp(token, possibleName2) == 0) || (strcmp(token, possibleName4) == 0)){
+                nameIsQuoted = true;
+            }
+            
             actualColNum = currentCol;
             count += 1;
         }
     }
     
     if(count != 1){
+        printf("More than one 'name' in header");
         printf("Invalid File Format\n");
         exit(-1);
     }
@@ -199,10 +212,23 @@ bool isValidCSV(char *filename){
         printf("Valid File Extension\n");
         return true;
     }else{
+        printf("Filename is not valid\n");
         printf("Invalid File Format\n");
         exit(-1);
     }
     return false;
+}
+
+void printLinkedList(struct Tweets **tweets){
+    
+    struct Tweets *temp;
+    
+    for(temp = *tweets; temp != NULL; temp = temp->nextTweet){
+        
+        printf("Tweeter: %s Tweet Count: %d\n", temp->name, temp->numberOfTweets);
+        
+    }
+    
 }
 
 void maxTweeter(const char *filename){
@@ -217,14 +243,12 @@ void maxTweeter(const char *filename){
     int column_count = 0;
     int tmp_column_count = 0;
     int namePOS = 0;
-    char *columnNames[1024];
     struct Tweets *tweetList = NULL;
     
     // Array to store all csv information.
 //    char csvToArray[MAX_ROWS][MAX_LINE_LENGTH];
     // temp buffer to store line contents.
     char buffer[MAX_LINE_LENGTH];
-    
     
     while(fgets(buffer, MAX_LINE_LENGTH, file)){
         
@@ -254,24 +278,37 @@ void maxTweeter(const char *filename){
         
         char *name = getStringFromPos(buffer, namePOS);
         tmp_column_count = getNumberOfColumns(buffer);
+        
         if(tmp_column_count != column_count){
-            printf("Invalid Input Format");
+            printf("Too many columns in row");
+            printf("Invalid Input Format\n");
             exit(-1);
         }
         
-        
-        // If the name is not in the list then add it.
-        if(!checkListForName(&tweetList, name)){
-            
-            addTweeter(&tweetList, name, 1);
+        // Check for quoted values if they need to be checked for.
+        if(nameIsQuoted){
+            // If there is an entry like "john or john" then it is invalid.
+            // If this returns true then strip outermost quotes to be stored in linked-list.
+            if(checkValidQuotedItem(name)){
+                removeFirstAndLast(name);
+                
+            }else{
+                
+                printf("Error: Quote Mismatch\n");
+                printf("Invalid Input Format\n");
+                exit(-1);
+            }
             
         }
         
-
-        
-        
+        // If the name is not in the list then add it.
+        if(!checkListForName(&tweetList, name)){
+            addTweeter(&tweetList, name, 1);
+        }
         
     } // fgets()
+    
+    printLinkedList(&tweetList);
     
 } // maxTweeter
 
@@ -300,7 +337,8 @@ int main(int argc, char *argv[]){
         maxTweeter(filename);
         
     }
-
+    
+    
     
 //    char targetString[] = "\"Hello\"";
 //    removeOutermostQuotes(targetString);
