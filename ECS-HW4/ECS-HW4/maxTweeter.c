@@ -6,7 +6,6 @@
 //  Copyright © 2019 Luke Silva. All rights reserved.
 //
 
-
 #include "maxTweeter.h"
 #include <stdio.h>
 #include <string.h>
@@ -59,11 +58,11 @@ struct Tweeter {
 };
 
 
-void addTweeter(struct Tweeter **tweet, char *tweeterName, int numTweets){
-    struct Tweeter *tempTweet = (struct Tweeter*) malloc(sizeof(struct Tweeter));
-    tempTweet->Name = tweeterName;
+void addTweeter(struct Tweets **tweet, char *tweeterName, int numTweets){
+    struct Tweets *tempTweet = (struct Tweets*) malloc(sizeof(struct Tweeter));
+    tempTweet->name = tweeterName;
     tempTweet->numberOfTweets = numTweets;
-    tempTweet->nextTweeter = *tweet;
+    tempTweet->nextTweet = *tweet;
     *tweet = tempTweet;
 }
 
@@ -121,7 +120,7 @@ int getNumberOfColumns(char* line){
     return count;
 }
 
-char *getStringFromPos(char *line, int pos){
+char* getStringFromPos(char *line, int pos){
     
     int column = 0;
     
@@ -216,8 +215,10 @@ void maxTweeter(const char *filename){
     
     int row_count = 0;
     int column_count = 0;
+    int tmp_column_count = 0;
     int namePOS = 0;
     char *columnNames[1024];
+    struct Tweets *tweetList = NULL;
     
     // Array to store all csv information.
 //    char csvToArray[MAX_ROWS][MAX_LINE_LENGTH];
@@ -233,17 +234,42 @@ void maxTweeter(const char *filename){
         
         row_count++;
         
+        if(row_count > MAX_ROWS){
+            printf("Invalid Input Format");
+            exit(-1);
+        }
+        
         // Process the header... check for "name" column.
         if(row_count == 1){
             
             column_count = getNumberOfColumns(buffer);
             printf("Column_count = %d\n", column_count);
             
+            // Position of name column.
             namePOS = getNameColNumber(buffer);
             printf("Name Column Found @ index = %d\n", namePOS);
-    
+
             continue;
         }
+        
+        char *name = getStringFromPos(buffer, namePOS);
+        tmp_column_count = getNumberOfColumns(buffer);
+        if(tmp_column_count != column_count){
+            printf("Invalid Input Format");
+            exit(-1);
+        }
+        
+        
+        // If the name is not in the list then add it.
+        if(!checkListForName(&tweetList, name)){
+            
+            addTweeter(&tweetList, name, 1);
+            
+        }
+        
+
+        
+        
         
     } // fgets()
     
