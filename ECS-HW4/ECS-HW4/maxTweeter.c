@@ -224,16 +224,20 @@ int getNameColNumber(char *headerLine){
     char possibleName2[10];
     char possibleName3[10];
     char possibleName4[10];
+    char possibleName5[10];
+    char possibleName6[10];
 
     // Copy valid name columns into char arrays.
     strcpy(possibleName1, "name");
     strcpy(possibleName2, "\"name\"");
     strcpy(possibleName3, "name\n");
     strcpy(possibleName4, "\"name\n\"");
+    strcpy(possibleName5, "name\r\n");
+    strcpy(possibleName6, "\"name\r\n\"");
     
     char *token;
     token = strsep(&headerLine, ",");
-    if(strcmp(token, possibleName1) == 0 || strcmp(token, possibleName2) == 0 || strcmp(token, possibleName3) == 0 || strcmp(token, possibleName4) == 0){
+    if(strcmp(token, possibleName1) == 0 || strcmp(token, possibleName2) == 0 || strcmp(token, possibleName3) == 0 || strcmp(token, possibleName4) == 0 || strcmp(token, possibleName5) == 0 || strcmp(token, possibleName6) == 0){
         
         // Check if name is quoted. If it is we need to make sure that all the entries are quoted too.
         if((strcmp(token, possibleName2) == 0) || (strcmp(token, possibleName4) == 0)){
@@ -246,7 +250,7 @@ int getNameColNumber(char *headerLine){
     
     while((token = strsep(&headerLine, ","))){
         currentCol += 1;
-        if(strcmp(token, possibleName1) == 0 || strcmp(token, possibleName2) == 0 || strcmp(token, possibleName3) == 0 || strcmp(token, possibleName4) == 0){
+        if(strcmp(token, possibleName1) == 0 || strcmp(token, possibleName2) == 0 || strcmp(token, possibleName3) == 0 || strcmp(token, possibleName4) == 0 || strcmp(token, possibleName5) == 0 || strcmp(token, possibleName6) == 0){
             
             if((strcmp(token, possibleName2) == 0) || (strcmp(token, possibleName4) == 0)){
                 nameIsQuoted = true;
@@ -258,7 +262,7 @@ int getNameColNumber(char *headerLine){
     }
     
     if(count != 1){
-        printf("More than one 'name' in header");
+        printf("More than one 'name' in header or none found.\n");
         printf("Invalid File Format\n");
         exit(-1);
     }
@@ -347,7 +351,7 @@ void maxTweeter(const char *filename){
         tmp_column_count = getNumberOfColumns(buffer);
         
         if(tmp_column_count != column_count){
-            printf("Too many columns in row");
+            printf("Column Count != Header Column Count\n");
             printf("Invalid Input Format\n");
             exit(-1);
         }
@@ -375,8 +379,10 @@ void maxTweeter(const char *filename){
         
     } // fgets()
     
+    printf("Non-Sorted List:\n\n");
     printLinkedList(&tweetList);
     MergeSort(&tweetList);
+    printf("Sorted List:\n\n");
     printLinkedList(&tweetList);
     
 } // maxTweeter
@@ -398,6 +404,7 @@ int main(int argc, char *argv[]){
 //    char* fileName = argv[2];
     
     char filename[] = "/Users/celestinosilva/Downloads/test-tweets.csv";
+    char filename2[] = "/Users/celestinosilva/Downloads/empty-tweets.csv";
     
     if(isValidCSV(filename)){
         
