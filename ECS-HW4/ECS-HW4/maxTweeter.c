@@ -77,15 +77,23 @@ void removeFirstAndLast(char *targetString){
     
     
 }
-
 // Checks Entries and Headers for valid quotes.
-char* removeOutermostQuotes(char* string){
+bool checkValidQuotedItem(char* string){
     
-    int lastCharPosition = strlen(string) - 1;
+    int lastCharPosition = (int)strlen(string) - 1;
     
-    printf("First character = %c, Last Character = %c\n", string[0],string[lastCharPosition]);
-    return "hello";
+    if(string[0] == '\"' || string[lastCharPosition] == '\"'){
+        
+        if(string[0] == '\"' && string[lastCharPosition] == '\"'){
+            printf("String has matching quote set.\n");
+            return true;
+        }else{
+            printf("Error: String does not have matching quote set.\n");
+            return false;
+        }
+    }
     
+    return false;
 }
 
 
@@ -110,8 +118,26 @@ int getNumberOfColumns(char* line){
     while((token = strsep(&tmp, ","))){
         count+=1;
     }
-    
     return count;
+}
+
+char *getStringFromPos(char *line, int pos){
+    
+    int column = 0;
+    
+    char *token;
+    token = strsep(&line, ",");
+    if(pos == column){
+        return token;
+    }else{
+        while ((token = strsep(&line, ","))) {
+            column += 1;
+            if(pos == column){
+                return token;
+            }
+        }
+    }
+    return "NULL";
 }
 
 // Return column number of the "name" or ""name"" column.
@@ -125,21 +151,27 @@ int getNameColNumber(char *headerLine){
     // On piazza TA said that maximum size of name could by whole line?
     char possibleName1[10];
     char possibleName2[10];
-    
+    char possibleName3[10];
+    char possibleName4[10];
+
     // Copy valid name columns into char arrays.
     strcpy(possibleName1, "name");
     strcpy(possibleName2, "\"name\"");
+    strcpy(possibleName3, "name\n");
+    strcpy(possibleName4, "\"name\n\"");
     
     char *token;
     token = strsep(&headerLine, ",");
-    if(strcmp(token, possibleName1) == 0 || strcmp(token, possibleName2) == 0){
-        actualColNum = 0;
+    if(strcmp(token, possibleName1) == 0 || strcmp(token, possibleName2) == 0 || strcmp(token, possibleName3) == 0 || strcmp(token, possibleName4) == 0){
+        
+        actualColNum = currentCol;
         count += 1;
     }
     
     while((token = strsep(&headerLine, ","))){
         currentCol += 1;
-        if(strcmp(token, possibleName1) == 0 || strcmp(token, possibleName2) == 0){
+        if(strcmp(token, possibleName1) == 0 || strcmp(token, possibleName2) == 0 || strcmp(token, possibleName3) == 0 || strcmp(token, possibleName4) == 0){
+            
             actualColNum = currentCol;
             count += 1;
         }
@@ -147,9 +179,8 @@ int getNameColNumber(char *headerLine){
     
     if(count != 1){
         printf("Invalid File Format\n");
-        return -1;
+        exit(-1);
     }
-
     return actualColNum;
 }
 
@@ -200,8 +231,6 @@ void maxTweeter(const char *filename){
         // Check if first line is null.
         // Check for empty first line ... " ,   ,  ,,,  ,, , ,"
         
-        char *tmp = strdup(buffer);
-        
         row_count++;
         
         // Process the header... check for "name" column.
@@ -212,25 +241,8 @@ void maxTweeter(const char *filename){
             
             namePOS = getNameColNumber(buffer);
             printf("Name Column Found @ index = %d\n", namePOS);
-            
-            // Gets pointer to first element.
-            columnNames[0] = strsep(&tmp, ",");
-            column_count++;
-            
-            // Gets every comma seperated header.
-            char *token;
-            int i = 0;
-            while((token = strsep(&tmp, ","))){
-                i+=1;
-                column_count+=1;
-                printf("Iteration : %d Value: %s\n", i, token);
-                columnNames[i] = token;
-                
-                printf("ColumnName Value = %s\n", columnNames[i]);
-            }
-            
+    
             continue;
-            
         }
         
     } // fgets()
@@ -256,13 +268,19 @@ int main(int argc, char *argv[]){
 //    char* fileName = argv[2];
     
     char filename[] = "/Users/celestinosilva/Downloads/test-tweets.csv";
-//    maxTweeter(filename);
     
-    isValidCSV(filename);
-    char targetString[] = "\"Hello\"";
+    if(isValidCSV(filename)){
+        
+        maxTweeter(filename);
+        
+    }
+
     
-    removeFirstAndLast(targetString);
-    printf(targetString);
+//    char targetString[] = "\"Hello\"";
+//    removeOutermostQuotes(targetString);
+//    removeFirstAndLast(targetString);
+//
+//    printf(targetString);
     
     return 0;
     
