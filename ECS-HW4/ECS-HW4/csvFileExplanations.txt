@@ -13,4 +13,6 @@ l.csv - no rows besides the header -> valid
 m.csv - quotes within tweeter name are fine
 n.csv - test removal of newline and return characters
 o.csv - newlines are removed, if found at the end of a string
-p.csv - only a name column
+p.csv - only a name column, no quotes
+q.csv - only a name column, with quotes
+r.csv - "name" only 
