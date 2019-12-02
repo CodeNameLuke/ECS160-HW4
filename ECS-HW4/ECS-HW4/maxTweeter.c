@@ -306,11 +306,24 @@ void printLinkedList(struct Tweets **tweets){
 
 void maxTweeter(const char *filename){
     
+    char * line = (char *)malloc(sizeof(char) * 1024);
+    
     FILE *file = fopen(filename, "r");
     
     if(!file){
         perror("Invalid Input Format\n");
     }
+    
+    // Move ptr to end of file and check the length using ftell..
+    fseek (file, 0, SEEK_END);
+    long fileLength = ftell(file);
+    if (fileLength == 0)
+    {
+        printf("Invalid Input Format\n");
+        exit(-1);
+    }
+    // Move ptr back to the beginning of the file.
+    fseek(file, 0, SEEK_SET);
     
     int row_count = 0;
     int column_count = 0;
