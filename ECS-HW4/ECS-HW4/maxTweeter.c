@@ -17,7 +17,12 @@
 #define MAX_ROWS 20000 // 20,000 Lines Max CSV.
 
 typedef struct Tweets tweets;
+
 bool nameIsQuoted = false;
+
+
+// Need To Implement This Immediately.
+bool nameIsInLastColumn = false;
 
 struct Tweets{
     
@@ -312,6 +317,7 @@ void maxTweeter(const char *filename){
     
     if(!file){
         perror("Invalid Input Format\n");
+        exit(-1);
     }
     
     // Move ptr to end of file and check the length using ftell..
@@ -425,13 +431,6 @@ int main(int argc, char *argv[]){
         
     }
     
-    
-    
-//    char targetString[] = "\"Hello\"";
-//    removeOutermostQuotes(targetString);
-//    removeFirstAndLast(targetString);
-//
-//    printf(targetString);
     
     return 0;
     
