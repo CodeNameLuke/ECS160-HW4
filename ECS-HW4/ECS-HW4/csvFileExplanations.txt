@@ -1,0 +1,14 @@
+a.csv - a very simple and generic csv, should be valid (** - had to reorder mergesort; was sorting in ascending, not desc order)
+b.csv - used to check whether an unquoted name column will give the proper error when a tweeter has quotes around it (expected: invalid)
+c.csv - checks the opposite of b.csv; a quoted name with unquoted tweeters
+d.csv - doubly quoted name, name column with one quote; both considered invalid (should not be able to find a valid name column)
+e.csv - two name columns (duplicate name headers) - > Invalid
+f.csv - tweeter has a single quote on either left or right side -> invalid
+g.csv - skip over empty line (\n) with no problem
+h.csv - no header -> invalid file (1st row doesnt have a name column)
+i.csv - more than 10 tweeters; should only print 10
+j.csv - mismatch between number of columns in header and in other rows
+k.csv - empty column at end, no problem, empty values within the csv
+l.csv - no rows besides the header -> valid
+m.csv - quotes within tweeter name are fine
+o.csv - newlines are removed, if found at the end of a string
