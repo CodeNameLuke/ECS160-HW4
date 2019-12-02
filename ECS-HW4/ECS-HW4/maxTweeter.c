@@ -141,7 +141,12 @@ void printLinkedList(struct Tweets **tweets){
 void removeFirstAndLast(char *targetString) {
 
     size_t length = strlen(targetString);
-    //assert(length >= 2); // Need to make sure the string is not of length 2.
+    if(length < 2) {
+      // then we cannot remove first and last
+      printf("Invalid File Format\n");
+      exit(-1);
+    }
+
     memmove(targetString, targetString + 1, length - 2);
     targetString[length - 2] = 0;
 }
@@ -159,7 +164,6 @@ int numQuotesForString(char* string) {
     if(string[lastCharPosition] == '\"') {
       numQuotes++;
     }
-
     return numQuotes;
 }
 
@@ -215,6 +219,8 @@ int getNameColNumber(char *headerLine){
     char possibleName4[10];
     char possibleName5[10];
     char possibleName6[10];
+    char possibleName7[10];
+    char possibleName8[10];
 
     // Copy valid name columns into char arrays.
     strcpy(possibleName1, "name");
@@ -223,13 +229,19 @@ int getNameColNumber(char *headerLine){
     strcpy(possibleName4, "\"name\n\"");
     strcpy(possibleName5, "name\r\n");
     strcpy(possibleName6, "\"name\r\n\"");
+    strcpy(possibleName7, "\"name\"\n");
+    strcpy(possibleName8, "\"name\"\r\n");
+
 
     char *token;
     token = strsep(&headerLine, ",");
-    if(strcmp(token, possibleName1) == 0 || strcmp(token, possibleName2) == 0 || strcmp(token, possibleName3) == 0 || strcmp(token, possibleName4) == 0 || strcmp(token, possibleName5) == 0 || strcmp(token, possibleName6) == 0){
+    if(strcmp(token, possibleName1) == 0 || strcmp(token, possibleName2) == 0 || strcmp(token, possibleName3) == 0
+      || strcmp(token, possibleName4) == 0 || strcmp(token, possibleName5) == 0 || strcmp(token, possibleName6) == 0
+      || strcmp(token, possibleName7) == 0 || strcmp(token, possibleName8) == 0){
 
         // Check if name is quoted. If it is we need to make sure that all the entries are quoted too.
-        if((strcmp(token, possibleName2) == 0) || (strcmp(token, possibleName4) == 0)){
+        if((strcmp(token, possibleName2) == 0) || (strcmp(token, possibleName4) == 0)
+        || (strcmp(token, possibleName7) == 0 || strcmp(token, possibleName8) == 0)){
             nameIsQuoted = true;
         }
 
@@ -252,11 +264,11 @@ int getNameColNumber(char *headerLine){
 
     if(count > 1){
         //printf("More than one 'name' in header\n");
-        printf("Invalid File Format\n");
+        printf("Invalid File Format - too many names\n");
         exit(-1);
     } else if (count == 0) {
       //printf("No name header found\n");
-      printf("Invalid File Format\n");
+      printf("Invalid File Format - no name column\n");
       exit(-1);
     }
     return actualColNum;
