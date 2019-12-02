@@ -11,4 +11,6 @@ j.csv - mismatch between number of columns in header and in other rows
 k.csv - empty column at end, no problem, empty values within the csv
 l.csv - no rows besides the header -> valid
 m.csv - quotes within tweeter name are fine
+n.csv - test removal of newline and return characters
 o.csv - newlines are removed, if found at the end of a string
+p.csv - only a name column

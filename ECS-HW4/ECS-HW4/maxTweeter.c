@@ -146,24 +146,6 @@ void removeFirstAndLast(char *targetString) {
     targetString[length - 2] = 0;
 }
 
-// Checks Entries and Headers for valid quotes.
-// bool checkValidQuotedItem(char* string) {
-//
-//     int lastCharPosition = (int)strlen(string) - 1;
-//
-//     if(string[0] == '\"' || string[lastCharPosition] == '\"'){
-//
-//         if(string[0] == '\"' && string[lastCharPosition] == '\"'){
-//             //printf("String has matching quote set.\n");
-//             return true;
-//         } else {
-//             //printf("Error: String does not have matching quote set.\n");
-//             return false;
-//         }
-//     }
-//     return false;
-// }
-
 // counts the number of quotes surrounding the string
 int numQuotesForString(char* string) {
 
@@ -353,7 +335,7 @@ void maxTweeter(const char *filename){
             // Position of name column.
             namePOS = getNameColNumber(buffer);
             //printf("Name Column Found @ index = %d\n", namePOS);
-            if(namePOS == column_count) {
+            if(namePOS == column_count - 1) {
               // the name is in the last column, which means we might have to strip
               // the newline character from it
               nameIsInLastColumn = true;
@@ -377,10 +359,13 @@ void maxTweeter(const char *filename){
         }
 
         if(nameIsInLastColumn) {
-          // then we want to remove any potential newline characters inside the name
+          // then we want to remove any potential newline and retrurn characters inside the name
           char *pos;
           // find the position of the newline character, and replace it with NULL if the newline exists
           if ((pos=strchr(name, '\n')) != NULL) {
+            *pos = '\0';
+          }
+          if ((pos=strchr(name, '\r')) != NULL) {
             *pos = '\0';
           }
         }
@@ -391,7 +376,7 @@ void maxTweeter(const char *filename){
             removeFirstAndLast(name); // remove both quotes if we have both
           } else {
             // we have 0 or 1 quotes when expecting 2
-            printf("Error: Quote Mismatch\n");
+            //printf("Error: Quote Mismatch\n");
             printf("Invalid Input Format\n");
             exit(-1);
           }
@@ -399,7 +384,7 @@ void maxTweeter(const char *filename){
           // the name column has no quotes
           if(numQuotesForString(name) != 0) {
             // but we have some quotes even though we are expecting none
-            printf("Error: Quote Mismatch\n");
+            //printf("Error: Quote Mismatch\n");
             printf("Invalid Input Format\n");
             exit(-1);
           }
@@ -414,11 +399,8 @@ void maxTweeter(const char *filename){
         }
     } // fgets()
 
-    // printf("Non-Sorted List:\n\n");
-    // printLinkedList(&tweetList);
     // run the sort on the list, then print the top 10 (or less) tweeters, in order
     MergeSort(&tweetList);
-    //printf("Sorted List:\n\n");
     printLinkedList(&tweetList);
 
     // close the file:
@@ -432,12 +414,10 @@ int main(int argc, char *argv[]){
        printf("Invalid Input Format\n");
        return -1;
    }
-
    // argv[1] is where we expect to find the filename.
    // check if it is a valid csv file, and then run maxTweeter
    if(isValidCSV(argv[1])){
         maxTweeter(argv[1]);
    }
-
     return 0;
 }
